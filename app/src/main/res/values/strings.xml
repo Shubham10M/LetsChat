@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">LetsChat</string>
+    <string name="verify_number">Verify %s</string>
+    <string name="waiting_text">Waiting to automatically detect an SMS to sent to wrong number?</string>
+    <string name="seconds_remaining">Seconds Remaining %d</string>
+</resources>

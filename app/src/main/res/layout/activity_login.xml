@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".LoginActivity">
+
+
+    <TextView
+        android:id="@+id/txtWlc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Welcome To Let'sChat"
+        android:gravity="center"
+        android:layout_marginTop="38sp"
+        android:textSize="34sp"
+        android:textColor="@color/teal_700"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:id="@+id/txtVerify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Verify Your Number"
+        android:gravity="center"
+        android:layout_marginTop="18sp"
+        android:layout_below="@+id/txtWlc"
+        android:textSize="30sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        />
+    <TextView
+        android:id="@+id/txtinfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please enter your mobile number.You will get a SMS including a verification code."
+        android:gravity="center"
+        android:fontFamily="sans-serif-condensed"
+        android:layout_marginTop="18sp"
+        android:layout_below="@+id/txtVerify"
+        android:textSize="18sp"
+        android:textColor="#9e9e9e"
+        android:textStyle="bold"
+        />
+<!--      <androidx.appcompat.widget.AppCompatSpinner-->
+<!--          android:layout_width="wrap_content"-->
+<!--          android:layout_height="wrap_content"-->
+<!--          android:layout_below="@+id/txtinfo"-->
+<!--          android:layout_marginTop="18dp"/>-->
+
+    <com.hbb20.CountryCodePicker
+        android:id="@+id/ccp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_below="@id/txtinfo"
+        android:layout_marginTop="18dp"
+        app:ccp_autoDetectCountry="true"
+        app:ccp_showNameCode="false"
+        tools:ccp_contentColor="#fcfdfd"
+        tools:ccp_textSize="20dp" />
+
+    <EditText
+        android:id="@+id/phone_number_edt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="phone"
+        android:maxLength="10"
+        android:inputType="phone"
+        android:layout_toRightOf="@+id/ccp"
+        android:imeActionLabel="Send"
+        android:layout_below="@+id/txtinfo"
+        android:imeOptions="actionUnspecified"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:layout_marginTop="17dp"
+        android:layout_marginLeft="5dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/Nxtbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone_number_edt"
+        android:layout_marginLeft="160dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="10dp"
+        android:layout_marginTop="24dp"
+        android:text="Next"
+        android:textAllCaps="true"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        app:cornerRadius="5dp"
+        />
+
+</RelativeLayout>

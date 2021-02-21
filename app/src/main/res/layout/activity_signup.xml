@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foregroundGravity="center_horizontal"
+    tools:context=".SignupActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/txtprofile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Profile Info"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:textSize="34sp"
+        android:textColor="@color/teal_700"
+        android:textStyle="bold"/>
+
+       <TextView
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:text="Please provide your name and profile photo"
+           android:textSize="16sp"
+           android:padding="15dp"
+           android:layout_marginLeft="28dp"
+           />
+
+           <com.google.android.material.imageview.ShapeableImageView
+               android:id="@+id/userImgView"
+               android:layout_width="120dp"
+               android:layout_height="120dp"
+               android:clickable="true"
+               android:focusable="true"
+               android:src="@drawable/profile_pic"
+               android:layout_marginTop="30dp"
+               android:layout_gravity="center"
+               android:adjustViewBounds="true"
+               android:scaleType="centerCrop"
+               app:shapeAppearanceOverlay="@style/RoundedImageView"/>
+
+              <EditText
+                  android:id="@+id/nameEt"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center"
+                  android:layout_marginStart="30dp"
+                  android:layout_marginTop="20dp"
+                  android:layout_marginLeft="30dp"
+                  android:layout_marginEnd="30dp"
+                  android:hint="Type your name here"
+                  android:imeActionLabel="send"
+                  android:imeOptions="actionUnspecified"
+                  android:inputType="textPersonName"
+                  android:maxLines="1"
+                  android:singleLine="true"
+                  android:textSize="16dp"
+                  />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nextBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/phone_number_edt"
+        android:layout_marginLeft="160dp"
+        android:paddingStart="20dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="10dp"
+        android:layout_marginTop="24dp"
+        android:text="Next"
+        android:enabled="false"
+        android:textAllCaps="true"
+        android:textColor="#fff"
+        android:textSize="18sp"
+        android:textStyle="normal"
+        app:cornerRadius="5dp"
+        />
+
+</LinearLayout>
