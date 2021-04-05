@@ -3,4 +3,16 @@
     <string name="verify_number">Verify %s</string>
     <string name="waiting_text">Waiting to automatically detect an SMS to sent to wrong number?</string>
     <string name="seconds_remaining">Seconds Remaining %d</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="yesterday" />
+    <string name="monday" />
+    <string name="tuesday" />
+    <string name="wednesday" />
+    <string name="thursday" />
+    <string name="friday" />
+    <string name="saturday" />
+    <string name="sunday" />
+    <string name="today" />
+    <string name="like_message" />
 </resources>

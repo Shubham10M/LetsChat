@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content" android:layout_width="wrap_content">
+    <item android:state_selected="false" android:drawable="@drawable/ic_high_five"/>
+    <item android:state_selected="true" android:drawable="@drawable/ic_high_five_selected"/>
+
+</selector>

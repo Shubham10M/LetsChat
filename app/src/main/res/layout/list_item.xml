@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:focusable="true"
+    android:clickable="true"
+    android:background="?attr/selectableItemBackground">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/userImgView"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/profile_pic"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/RoundedImageView"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_marginStart="8dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp">
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/titleTv"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            tools:text="Shubham Mishra"
+            android:textColor="@color/black"
+            android:lines="1"
+            android:textStyle="bold"
+            android:layout_marginEnd="12dp"
+            android:textSize="18sp"
+            android:layout_marginRight="12dp" />
+
+            <TextView
+            android:id="@+id/timeTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            tools:text="22/2/21"
+            android:textColor="@color/black"
+            android:lines="1"
+            android:textSize="14sp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/subtitleTv"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                tools:text="Hey there I am using Letschat"
+                android:textColor="@color/black"
+                android:lines="1"
+                android:layout_marginEnd="12dp"
+                android:textSize="14sp"
+                android:layout_marginRight="12dp" />
+
+            <TextView
+                android:id="@+id/countTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:paddingRight="8dp"
+                android:paddingStart="8dp"
+                android:background="@drawable/count_background"
+                android:textColor="@color/white"
+                android:lines="1"
+                tools:text="6"
+                android:textSize="14sp"
+                android:paddingLeft="8dp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

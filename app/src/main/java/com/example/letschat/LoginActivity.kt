@@ -1,10 +1,10 @@
 package com.example.letschat
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.hbb20.CountryCodePicker
@@ -31,6 +31,8 @@ class LoginActivity : AppCompatActivity() {
         ccp = findViewById(R.id.ccp)
         phone_number_edt = findViewById(R.id.phone_number_edt)
         Nxtbtn = findViewById(R.id.Nxtbtn)
+
+
 
 
         phone_number_edt.addTextChangedListener {
