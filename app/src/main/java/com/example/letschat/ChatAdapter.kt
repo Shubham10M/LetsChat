@@ -6,13 +6,11 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_item_chat_recv_message.view.*
-import kotlinx.android.synthetic.main.list_item_chat_sent_message.view.*
-import kotlinx.android.synthetic.main.list_item_chat_sent_message.view.highFiveImg
 import kotlinx.android.synthetic.main.list_item_date_header.view.*
 
 
-class ChatAdapter (private val list : MutableList<ChatEvent>, private val nCurrenUid : String) :
-      RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(private val list: MutableList<ChatEvent>, private val mCurrentUser: String) :
+        RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var highFiveClick: ((id: String, status: Boolean) -> Unit)? = null
 
@@ -23,22 +21,22 @@ class ChatAdapter (private val list : MutableList<ChatEvent>, private val nCurre
         }
         return when (viewType) {
             TEXT_MESSAGE_RECEIVED -> {
-                MessageViewHolder(
+                MessageHolder(
                         inflate(R.layout.list_item_chat_recv_message)
                 )
             }
             TEXT_MESSAGE_SENT -> {
-                MessageViewHolder(
+                MessageHolder(
                         inflate(R.layout.list_item_chat_sent_message)
                 )
             }
             DATE_HEADER -> {
-                DateViewHolder(
+                DateHeaderHolder(
                         inflate(R.layout.list_item_date_header)
                 )
             }
             else -> {
-                MessageViewHolder(
+                MessageHolder(
                         inflate(R.layout.list_item_chat_recv_message)
                 )
             }
@@ -49,7 +47,7 @@ class ChatAdapter (private val list : MutableList<ChatEvent>, private val nCurre
 
         return when (val event = list[position]) {
             is Message -> {
-                if (event.senderId == nCurrenUid) {
+                if (event.senderId == mCurrentUser) {
                     TEXT_MESSAGE_SENT
                 } else {
                     TEXT_MESSAGE_RECEIVED
@@ -59,41 +57,37 @@ class ChatAdapter (private val list : MutableList<ChatEvent>, private val nCurre
             else -> UNSUPPORTED
         }
     }
+
     override fun getItemCount(): Int = list.size
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
-
         when (val item = list[position]) {
             is DateHeader -> {
-
                 holder.itemView.textView.text = item.date
             }
             is Message -> {
-                holder.itemView.apply {
-                   // holder.itemView.content = item.msg
-                    holder.itemView.time.text = item.sendAt.formatAsTime()
-                    when (getItemViewType(position)) {
-                        TEXT_MESSAGE_RECEIVED -> {
-   //                          var messageCardView : com.google.android.material.card.MaterialCardView
-//                            lateinit var highFiveImg : ImageView
-                            holder.itemView.messageCardView.setOnClickListener(object :
-                                    DoubleClickListener() {
-                                override fun onDoubleClick(v: View?) {
-                                    highFiveClick?.invoke(item.msgId, !item.liked)
-                                }
-                            })
-                            holder.itemView.highFiveImg.apply {
-                                isVisible = position == itemCount - 1 || item.liked
-                                isSelected = item.liked
-                                setOnClickListener {
-                                    highFiveClick?.invoke(item.msgId, !isSelected)
-                                }
+                holder.itemView.content.text = item.msg
+                holder.itemView.time.text = item.sendAt.formatAsTime()
+                when (getItemViewType(position)) {
+                    TEXT_MESSAGE_RECEIVED -> {
+                        holder.itemView.messageCardView.setOnClickListener(object :
+                                DoubleClickListener() {
+                            override fun onDoubleClick(v: View?) {
+                                highFiveClick?.invoke(item.msgId, !item.liked)
+                            }
+                        })
+                        holder.itemView.highFiveImg.apply {
+                            isVisible = position == itemCount - 1 || item.liked
+                            isSelected = item.liked
+                            setOnClickListener {
+                                highFiveClick?.invoke(item.msgId, !isSelected)
                             }
                         }
-                        TEXT_MESSAGE_SENT -> {
-                            holder.itemView.highFiveImg.apply {
-                                isVisible = item.liked
-                            }
+                    }
+
+                    TEXT_MESSAGE_SENT -> {
+                        holder.itemView.highFiveImg.apply {
+                            isVisible = item.liked
                         }
                     }
                 }
@@ -101,19 +95,17 @@ class ChatAdapter (private val list : MutableList<ChatEvent>, private val nCurre
         }
     }
 
+    class DateHeaderHolder(view: View) : RecyclerView.ViewHolder(view)
 
+    class MessageHolder(view: View) : RecyclerView.ViewHolder(view)
 
-
-
-    class DateViewHolder(view : View):RecyclerView.ViewHolder(view)
-    class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view)
-    // companion oblects are ther static variables of this class
     companion object {
         private const val UNSUPPORTED = -1
         private const val TEXT_MESSAGE_RECEIVED = 0
         private const val TEXT_MESSAGE_SENT = 1
         private const val DATE_HEADER = 2
     }
+
 }
 
 abstract class DoubleClickListener : View.OnClickListener {
@@ -124,10 +116,15 @@ abstract class DoubleClickListener : View.OnClickListener {
             onDoubleClick(v)
             lastClickTime = 0
         }
+//        else {
+//            onSingleClick(v)
+//        }
         lastClickTime = clickTime
     }
 
+    //    abstract fun onSingleClick(v: View?)
     abstract fun onDoubleClick(v: View?)
+
     companion object {
         private const val DOUBLE_CLICK_TIME_DELTA: Long = 300 //milliseconds
     }

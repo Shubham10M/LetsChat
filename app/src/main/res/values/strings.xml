@@ -15,4 +15,57 @@
     <string name="sunday" />
     <string name="today" />
     <string name="like_message" />
+    <string name="chats">Chats</string>
+    <string name="people">People</string>
+    <string name="my_profile">My Profile</string>
+    <string name="setting">Setting</string>
+    <string name="open_drawer" />
+    <string name="close_drawer" />
+    <string name="title_version" />
+    <string name="general">General</string>
+    <string name="notifi">Notification</string>
+    <string name="alerts">Alerts</string>
+    <string name="dark_theme">Dark Theme</string>
+    <string name="battery_saver">Battery Saver</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">disabled</string>
+    <string name="wifi_only">wifi only</string>
+    <string name="automatic">Automatic (based on Wallpaper)</string>
+    <string name="light">light</string>
+    <string name="dark">dark</string>
+    <string name="auto_play">Autoplay Vidoes</string>
+    <string name="display">Display</string>
+    <string name="brightness_level">Brightness Level</string>
+    <string name="value_percentage">Percentage Value</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="change_wallpaper">Change Wallpaper</string>
+    <string name="device_theme">Device Theme</string>
+    <string name="theme_entries" />
+    <string name="settings">settings</string>
+    <string name="letschat_name">Hey there I am using Letschat</string>
+    <string name="profile_info">Profile Info</string>
+    <string name="please_provide_your_name_and_profile_photo">Please provide your name and profile photo</string>
+    <string name="type_your_name_here">Type your name here</string>
+    <string name="next">Next</string>
+    <string name="shubham_mishra">Shubham Mishra</string>
+    <string name="type_your_message">Type your message</string>
+    <string name="hey_i_am_available">Hey!I am Available</string>
+
+    <string-array name="auto_play_entries">
+        <item>@string/enabled</item>
+        <item>@string/disabled</item>
+        <item>@string/wifi_only</item>
+    </string-array>
+    <string-array name="theme_entries">
+        <item>@string/automatic</item>
+        <item>@string/light</item>
+        <item>@string/dark</item>
+    </string-array>
+
+    <string-array name="entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 </resources>

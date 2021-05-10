@@ -1,6 +1,5 @@
 package com.example.letschat
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,53 +16,53 @@ import com.firebase.ui.firestore.paging.LoadingState
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.fragment_chats.*
 
 private const val DELETED_VIEW_TYPE = 1
 private const val NORMAL_VIEW_TYPE = 2
+
 class PeopleFragment : Fragment() {
 
-    lateinit var madapter : FirestorePagingAdapter<com.example.letschat.User, RecyclerView.ViewHolder>
+    private lateinit var mAdapter: FirestorePagingAdapter<User, RecyclerView.ViewHolder>
     private lateinit var viewManager: RecyclerView.LayoutManager
-    private lateinit var recyclerView: RecyclerView
-    val auth by lazy {
+    private val database by lazy {
+        FirebaseFirestore.getInstance().collection("users")
+                .orderBy("name", Query.Direction.DESCENDING)
+    }
+    private val auth by lazy {
         FirebaseAuth.getInstance()
     }
-    val database by lazy {
-        FirebaseFirestore.getInstance().collection("users")
-            .orderBy("name", Query.Direction.DESCENDING)
-    }
+
+
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
-            setupAdapter()
-
         viewManager = LinearLayoutManager(requireContext())
-         val view =  inflater.inflate(R.layout.fragment_chats,container,false)
-
-         recyclerView = view.findViewById(R.id.recyclerView)
-
-        return view ;
+        setupAdapter()
+        return inflater.inflate(R.layout.fragment_chats, container, false)
     }
 
-    // Init Paging Configuration
     private fun setupAdapter() {
+        // Init Paging Configuration
         val config = PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
                 .setPrefetchDistance(2)
                 .setPageSize(10)
                 .build()
-        // Init Adapter Configuration
-        val options = FirestorePagingOptions.Builder<com.example.letschat.User>()
-                .setLifecycleOwner(this)
-                .setQuery(database, config,User::class.java)
-                .build()
-        // Instantiate Paging Adapter
 
-        madapter = object : FirestorePagingAdapter<User, RecyclerView.ViewHolder>(options) {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int ): RecyclerView.ViewHolder {
+        // Init Adapter Configuration
+        val options = FirestorePagingOptions.Builder<User>()
+                .setLifecycleOwner(this)
+                .setQuery(database, config, User::class.java)
+                .build()
+
+        // Instantiate Paging Adapter
+        mAdapter = object : FirestorePagingAdapter<User, RecyclerView.ViewHolder>(options) {
+            override fun onCreateViewHolder(
+                    parent: ViewGroup,
+                    viewType: Int
+            ): RecyclerView.ViewHolder {
                 val inflater = layoutInflater
                 return when (viewType) {
                     NORMAL_VIEW_TYPE -> {
@@ -74,19 +73,27 @@ class PeopleFragment : Fragment() {
                 }
             }
 
-
-
-            override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: User) {
+            override fun onBindViewHolder(
+                    viewHolder: RecyclerView.ViewHolder,
+                    position: Int,
+                    user: User
+            ) {
                 // Bind to ViewHolder
-               if(holder is UserViewHolder){
-                   holder.bind(user = model){name: String, photo: String, id: String ->  
-                       val intent = Intent(requireContext(),ChatActivity::class.java)
-                       intent.putExtra(UID,id)
-                       intent.putExtra(NAME ,name)
-                       intent.putExtra( IMAGE,photo)
-                       startActivity(intent)
-                   }
-               }
+                if (viewHolder is UserViewHolder)
+                    if (auth.uid == user.uid) {
+                        currentList?.snapshot()?.removeAt(position)
+                        notifyItemRemoved(position)
+                    } else
+                        viewHolder.bind(user) { name: String, photo: String, id: String ->
+                            startActivity(
+                                    ChatActivity.createChatActivity(
+                                            requireContext(),
+                                            id,
+                                            name,
+                                            photo
+                                    )
+                            )
+                        }
             }
 
             override fun onError(e: Exception) {
@@ -94,16 +101,14 @@ class PeopleFragment : Fragment() {
                 e.message?.let { Log.e("MainActivity", it) }
             }
 
-
             override fun getItemViewType(position: Int): Int {
-                val item = getItem(position)?.toObject(com.example.letschat.User::class.java)
+                val item = getItem(position)?.toObject(User::class.java)
                 return if (auth.uid == item!!.uid) {
                     DELETED_VIEW_TYPE
                 } else {
                     NORMAL_VIEW_TYPE
                 }
             }
-
 
             override fun onLoadingStateChanged(state: LoadingState) {
                 when (state) {
@@ -130,15 +135,20 @@ class PeopleFragment : Fragment() {
             }
 
         }
-
     }
+
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         recyclerView.apply {
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            setHasFixedSize(true)
             layoutManager = viewManager
-            adapter = madapter
+            adapter = mAdapter
         }
+
     }
 
 }

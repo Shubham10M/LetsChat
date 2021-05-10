@@ -6,8 +6,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.EditText
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.Continuation
@@ -16,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import kotlinx.android.synthetic.main.activity_signup.*
 
 class SignupActivity : AppCompatActivity() {
 
@@ -28,17 +27,13 @@ class SignupActivity : AppCompatActivity() {
     private val database by lazy{
         FirebaseFirestore.getInstance()
     }
-    lateinit var nameEt : EditText
-    lateinit var downloadUrl: String
-    lateinit var userImgView : ImageView
-    lateinit var nextBtn : com.google.android.material.button.MaterialButton
+
+      lateinit var downloadUrl: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
-        userImgView = findViewById(R.id.userImgView)
-        nextBtn = findViewById(R.id.nextBtn)
-        nameEt = findViewById(R.id.nameEt)
 
         userImgView.setOnClickListener {
             checkPermissionForImage()

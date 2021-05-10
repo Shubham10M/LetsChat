@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="@string/alerts">
+
+        <Preference
+            android:key="Key"
+            android:title="@string/notifi">
+
+        </Preference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/general">
+      <SwitchPreferenceCompat
+          android:key="switch_prefernce"
+          android:title="@string/dark_theme"
+          android:summary="@string/battery_saver"/>
+
+       <MultiSelectListPreference
+           android:key="multi_select_prefernce"
+           android:title="@string/auto_play"
+           android:summary="@string/enabled"
+           android:entries="@array/auto_play_entries"
+           app:entryValues="@array/entry_values"
+           android:dialogTitle="@string/auto_play"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="expandable"
+        android:title="@string/display"
+        app:initialExpandedChildrenCount="1">
+
+        <SeekBarPreference
+            android:key="seekbar_preference"
+            android:title="@string/brightness_level"
+            android:summary="@string/value_percentage"/>
+
+        <Preference
+            android:key="intent_preference"
+            android:title="@string/wallpaper"
+            android:summary="@string/change_wallpaper"/>
+
+<!--        <ListPreference-->
+<!--            android:key="drop_down_preference"-->
+<!--            android:title="@string/device_theme"-->
+<!--            android:summary="@string/automatic"-->
+<!--            android:entries="@string/theme_entries"-->
+<!--            android:entryValues="@array/entry_values"/>-->
+    </PreferenceCategory>
+</PreferenceScreen>

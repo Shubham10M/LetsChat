@@ -5,67 +5,66 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="30dp"
-    android:layout_marginLeft="30dp"
+    android:clipToPadding="false"
     android:paddingStart="16dp"
     android:paddingTop="4dp"
     android:paddingEnd="16dp"
-    android:paddingBottom="4dp">
+    android:paddingBottom="4dp"
+    android:layout_marginLeft="30dp">
 
     <ImageView
         android:id="@+id/highFiveImg"
-        android:layout_width="28dp"
-        android:layout_height="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@string/like_message"
-        android:src="@drawable/ic_high_five_inverted"
         android:visibility="gone"
+        android:src="@drawable/ic_high_five_inverted"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/materialCardView3"
-        tools:ignore="UnknownId" />
+        app:layout_constraintEnd_toStartOf="@+id/materialCardView3" />
 
     <com.google.android.material.card.MaterialCardView
-        android:layout_width="175dp"
-        android:layout_height="60dp"
+        android:id="@+id/materialCardView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:elevation="0dp"
-        app:cardBackgroundColor="@color/design_default_color_secondary"
+        app:cardBackgroundColor="@color/teal_200"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearance="@style/ChatShapeAppearance">
 
+
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/f"
-            android:layout_width="149dp"
-            android:layout_height="60dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:padding="8dp"
-            android:rotationX="-356"
             app:alignItems="flex_end"
             app:flexWrap="wrap"
             app:justifyContent="flex_end">
-
 
             <TextView
                 android:id="@+id/content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                tools:text="Hello world" />
+                android:lineSpacingExtra="5dp"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                tools:text="Hello" />
 
             <TextView
                 android:id="@+id/time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginLeft="16dp"
                 android:textColor="#A6ffffff"
                 android:textSize="12sp"
-                tools:text="12:00 am" />
+                tools:text="12:00 AM"
+                android:layout_marginLeft="16dp" />
 
         </com.google.android.flexbox.FlexboxLayout>
-
 
     </com.google.android.material.card.MaterialCardView>
 

@@ -3,11 +3,11 @@ package com.example.letschat
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
 import com.squareup.picasso.Picasso
 import com.vanniktech.emoji.EmojiManager
 import com.vanniktech.emoji.EmojiPopup
@@ -18,40 +18,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-const val UID = "uid"
-const val NAME = "name"
-const val IMAGE = "photo"
+
+const val USER_ID = "userId"
+const val USER_THUMB_IMAGE = "thumbImage"
+const val USER_NAME = "userName"
 
 class ChatActivity : AppCompatActivity() {
+
     private val friendId by lazy {
-         intent.getStringExtra(UID)
+        intent.getStringExtra(USER_ID)
     }
     private val name by lazy {
-        intent.getStringExtra(NAME)
+        intent.getStringExtra(USER_NAME)
     }
-
     private val image by lazy {
-        intent.getStringExtra(IMAGE)
+        intent.getStringExtra(USER_THUMB_IMAGE)
     }
-    private val nCurrentUid by lazy{
+    private val mCurrentUid: String by lazy {
         FirebaseAuth.getInstance().uid!!
     }
-    private val db by lazy{
-     FirebaseDatabase.getInstance()
+    private val db: FirebaseDatabase by lazy {
+        FirebaseDatabase.getInstance()
     }
-//    lateinit var nameTv : TextView
-//    lateinit var userImgView  : ImageView
-//    lateinit var sendBtn : ImageView
-//    lateinit var msgEdtv : EditText
-//    lateinit var msgRv : RecyclerView
-   // lateinit var textView : TextView
-
-//       lateinit var currentUser: User
-      private var messages = mutableListOf<ChatEvent>()
+    lateinit var currentUser: User
     lateinit var chatAdapter: ChatAdapter
+
     private lateinit var keyboardVisibilityHelper: KeyboardVisibilityUtils
     private val mutableItems: MutableList<ChatEvent> = mutableListOf()
     private val mLinearLayout: LinearLayoutManager by lazy { LinearLayoutManager(this) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         EmojiManager.install(GoogleEmojiProvider())
@@ -59,79 +54,87 @@ class ChatActivity : AppCompatActivity() {
         keyboardVisibilityHelper = KeyboardVisibilityUtils(rootView) {
             msgRv.scrollToPosition(mutableItems.size - 1)
         }
-//        FirebaseFirestore.getInstance().collection("users").document(nCurrentUid).get()
-//            .addOnSuccessListener {
-//                currentUser == it.toObject(User::class.java)!!
-//            }
-//        //currentUser = findViewById(R.id.currentUser)
-//        nameTv = findViewById(R.id.nameTv)
-//        userImgView = findViewById(R.id.userImgView)
-//        sendBtn = findViewById(R.id.sendBtn)
-//        msgEdtv = findViewById(R.id.msgEdtv)
-//       // textView = findViewById(R.id.textView)
-//        msgRv = findViewById(R.id.msgRv)
 
-        chatAdapter = ChatAdapter(messages, nCurrentUid)
+        FirebaseFirestore.getInstance().collection("users").document(mCurrentUid).get()
+                .addOnSuccessListener {
+                    currentUser = it.toObject(User::class.java)!!
+                }
+
+        chatAdapter = ChatAdapter(mutableItems, mCurrentUid)
+
         msgRv.apply {
-            layoutManager = LinearLayoutManager(this@ChatActivity)
+            layoutManager = mLinearLayout
             adapter = chatAdapter
         }
+
         nameTv.text = name
         Picasso.get().load(image).into(userImgView)
+
         val emojiPopup = EmojiPopup.Builder.fromRootView(rootView).build(msgEdtv)
         smileBtn.setOnClickListener {
             emojiPopup.toggle()
         }
-        swipeToLoad.setOnRefreshListener{
+        swipeToLoad.setOnRefreshListener {
             val workerScope = CoroutineScope(Dispatchers.Main)
-             workerScope.launch{
-                 delay(2000)
-                 swipeToLoad.isRefreshing = false
-             }
+            workerScope.launch {
+                delay(2000)
+                swipeToLoad.isRefreshing = false
+            }
         }
+
+
         sendBtn.setOnClickListener {
             msgEdtv.text?.let {
-                if(it.isNotEmpty()){
+                if (it.isNotEmpty()) {
                     sendMessage(it.toString())
                     it.clear()
                 }
             }
         }
-        ListenToMessage(){ msg, update ->
-            if (update as Boolean) {
-                updateMessage(msg as Message)
-            } else {
-                addMessage(msg as Message, true)
-            }
 
+        listenMessages() { msg, update ->
+            if (update) {
+                updateMessage(msg)
+            } else {
+                addMessage(msg)
+            }
         }
+
         chatAdapter.highFiveClick = { id, status ->
             updateHighFive(id, status)
         }
+        updateReadCount()
+    }
+
+    private fun updateReadCount() {
+        friendId?.let { getInbox(mCurrentUid, it).child("count").setValue(0) }
     }
 
     private fun updateHighFive(id: String, status: Boolean) {
         friendId?.let { getMessages(it).child(id).updateChildren(mapOf("liked" to status)) }
     }
 
-    private fun addMessage(event: Message, b: Boolean) {
-        val eventBefore = messages.lastOrNull()
+    private fun addMessage(event: Message) {
+        val eventBefore = mutableItems.lastOrNull()
+
         // Add date header if it's a different day
-        if((eventBefore != null && !eventBefore.sendAt.isSameDayAs(event.sendAt)) || eventBefore == null){
-            messages.add(
-                DateHeader(
-                    event.sendAt, context = this
-                )
+        if ((eventBefore != null
+                        && !eventBefore.sendAt.isSameDayAs(event.sendAt))
+                || eventBefore == null
+        ) {
+            mutableItems.add(
+                    DateHeader(
+                            event.sendAt, this
+                    )
             )
         }
+        mutableItems.add(event)
 
-        messages.add(event)
-        chatAdapter.notifyItemInserted(messages.size)
-        msgRv.scrollToPosition(messages.size + 1)
-
+        chatAdapter.notifyItemInserted(mutableItems.size)
+        msgRv.scrollToPosition(mutableItems.size + 1)
     }
 
-    private fun updateMessage(msg: Message){
+    private fun updateMessage(msg: Message) {
         val position = mutableItems.indexOfFirst {
             when (it) {
                 is Message -> it.msgId == msg.msgId
@@ -143,120 +146,116 @@ class ChatActivity : AppCompatActivity() {
         chatAdapter.notifyItemChanged(position)
     }
 
-    private fun ListenToMessage(param: (Any, Any) -> Unit) {
-           friendId?.let {
-               getMessages(it)
-                       .orderByKey().addChildEventListener(object : ChildEventListener{
-                           override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                               val msg = snapshot.getValue(Message::class.java)!!
-                               addMessage(msg, true)
-                           }
-
-                           override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
-
-                           }
-
-                           override fun onChildRemoved(snapshot: DataSnapshot) {
-                               TODO("Not yet implemented")
-                           }
-
-                           override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
-                               TODO("Not yet implemented")
-                           }
-
-                           override fun onCancelled(error: DatabaseError) {
-                               TODO("Not yet implemented")
-                           }
-
-                       })
-           }
-       }
-
-    private fun sendMessage(msg: String) {
-    val id = friendId?.let { getMessages(it).push().key }
-        checkNotNull(id){"cannot be null"}
-        val msgMap =  Message(msg, nCurrentUid, id)
+    private fun listenMessages(newMsg: (msg: Message, update: Boolean) -> Unit) {
         friendId?.let {
-            getMessages(it).child(id).setValue(msgMap).addOnSuccessListener {
-                Log.i("CHATS", "completed")
-            }.addOnFailureListener {
-                Log.i("CHATS", it.localizedMessage)
-            }
+            getMessages(it)
+                .orderByKey()
+                .addChildEventListener(object : ChildEventListener {
+                    override fun onCancelled(p0: DatabaseError) {
+
+                    }
+
+                    override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+
+                    }
+
+                    override fun onChildChanged(data: DataSnapshot, p1: String?) {
+                        val msg = data.getValue(Message::class.java)!!
+                        newMsg(msg, true)
+                    }
+
+                    override fun onChildAdded(data: DataSnapshot, p1: String?) {
+                        val msg = data.getValue(Message::class.java)!!
+                        newMsg(msg, false)
+                    }
+
+                    override fun onChildRemoved(p0: DataSnapshot) {
+                    }
+
+                })
         }
-        updateLastMessage(msgMap)
+
     }
 
-    private fun updateLastMessage(message: Message) {
+    private fun sendMessage(msg: String) {
+        val id = friendId?.let { getMessages(it).push().key }
+        checkNotNull(id) { "Cannot be null" }
+        val msgMap = Message(msg, mCurrentUid, id)
+        friendId?.let { getMessages(it).child(id).setValue(msgMap) }
+        updateLastMessage(msgMap, mCurrentUid)
+    }
+
+    private fun updateLastMessage(message: Message, mCurrentUid: String) {
         val inboxMap = Inbox(
                 message.msg,
                 friendId,
                 name,
                 image,
-                count = 0
+                message.sendAt,
+                0
         )
-        getInox(nCurrentUid , friendId).setValue(inboxMap).addOnSuccessListener {
-            getInox(friendId, nCurrentUid).addListenerForSingleValueEvent(object : ValueEventListener{
-                override fun onDataChange(snapshot: DataSnapshot) {
-                     val value = snapshot.getValue(Inbox::class.java)
-                    inboxMap.apply {
-                        from = message.senderId
-//                        name = currentUser.name
- //                       image = currentUser.thumbImage
-                        count = 1
-                    }
-                    value?.let {
-                        if(it.from == message.senderId){
-                            inboxMap.count =  value.count+1
-                        }
-                    }
-                    getInox(friendId, nCurrentUid).setValue(inboxMap)
+
+        friendId?.let { getInbox(mCurrentUid, it).setValue(inboxMap) }
+
+        friendId?.let {
+            getInbox(it, mCurrentUid).addListenerForSingleValueEvent(object :
+                ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val value = p0.getValue(Inbox::class.java)
+                inboxMap.apply {
+                    from = message.senderId
+                    name = currentUser.name
+                    image = currentUser.thumbImage
+                    count = 1
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                if (value?.from == message.senderId) {
+                    inboxMap.count = value.count + 1
                 }
+                getInbox(friendId!!, mCurrentUid).setValue(inboxMap)
+            }
 
-
-            })
+        })
         }
-
     }
 
-    private fun markAsread(){
-        getInox(friendId, nCurrentUid).child("count").setValue(0)
+
+    private fun getMessages(friendId: String) = db.reference.child("messages/${getId(friendId)}")
+
+    private fun getInbox(toUser: String, fromUser: String) =
+            db.reference.child("chats/$toUser/$fromUser")
+
+
+    private fun getId(friendId: String): String {
+        return if (friendId > mCurrentUid) {
+            mCurrentUid + friendId
+        } else {
+            friendId + mCurrentUid
+        }
     }
 
-    // this function will return a refernce of inbox
-    private fun getInox(toUser: String?, fromUser: String?) =
-        db.reference.child("chats/$toUser/$fromUser")
-
-    private fun getMessages(friendId:String) =
-        db.reference.child("messages/${getId(friendId)}")
-    // ID for the messages
-    private fun getId(friendId: String):String{
-      return if(friendId  > nCurrentUid){
-          nCurrentUid + friendId
-      } else
-      {
-          friendId  + nCurrentUid
-      }
-    }
     override fun onResume() {
         super.onResume()
         rootView.viewTreeObserver
-            .addOnGlobalLayoutListener(keyboardVisibilityHelper.visibilityListener)
+                .addOnGlobalLayoutListener(keyboardVisibilityHelper.visibilityListener)
     }
+
+
     override fun onPause() {
         super.onPause()
         rootView.viewTreeObserver
-            .removeOnGlobalLayoutListener(keyboardVisibilityHelper.visibilityListener)
+                .removeOnGlobalLayoutListener(keyboardVisibilityHelper.visibilityListener)
     }
+
     companion object {
+
         fun createChatActivity(context: Context, id: String, name: String, image: String): Intent {
             val intent = Intent(context, ChatActivity::class.java)
-            intent.putExtra(UID, id)
-            intent.putExtra(NAME, name)
-            intent.putExtra(IMAGE, image)
+            intent.putExtra(USER_ID, id)
+            intent.putExtra(USER_NAME, name)
+            intent.putExtra(USER_THUMB_IMAGE, image)
+
             return intent
         }
     }
